@@ -8,7 +8,7 @@ export const validate =
     const result = schema.safeParse(req[source]);
     if (!result.success) {
       const flattened = (result.error as ZodError).flatten();
-      const details: Record<string, string[] | undefined> = flattened.fieldErrors || {};
+      const details = flattened.fieldErrors as Record<string, string[] | undefined>;
       sendError(res, 'Validation failed', 422, details);
       return;
     }

@@ -7,7 +7,7 @@ if (process.env.NODE_ENV !== 'production') {
   dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 }
 
-import express from 'express';
+import express, { type Express } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -21,7 +21,7 @@ import {
   securityHeaders,
 } from './middlewares/security';
 
-const app = express();
+const app: Express = express();
 const PORT = parseInt(process.env.PORT ?? '4000', 10);
 
 // Trust Railway's proxy (required for correct IP in rate limiting)

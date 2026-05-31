@@ -22,7 +22,7 @@ const TASK_JOINS = `
 
 export const listTasks = async (req: Request, res: Response): Promise<void> => {
   const { projectId } = req.params;
-  const query = req.query as Record<string, string>;
+  const rawQuery = req.query;
   const {
     status = '',
     priority = '',
@@ -33,7 +33,17 @@ export const listTasks = async (req: Request, res: Response): Promise<void> => {
     order = 'desc',
     page = '1',
     limit = '20',
-  } = query;
+  } = {
+    status: (Array.isArray(rawQuery.status) ? rawQuery.status[0] : rawQuery.status) || '',
+    priority: (Array.isArray(rawQuery.priority) ? rawQuery.priority[0] : rawQuery.priority) || '',
+    assigned_to: (Array.isArray(rawQuery.assigned_to) ? rawQuery.assigned_to[0] : rawQuery.assigned_to) || '',
+    overdue: (Array.isArray(rawQuery.overdue) ? rawQuery.overdue[0] : rawQuery.overdue) || '',
+    search: (Array.isArray(rawQuery.search) ? rawQuery.search[0] : rawQuery.search) || '',
+    sort: (Array.isArray(rawQuery.sort) ? rawQuery.sort[0] : rawQuery.sort) || 'created_at',
+    order: (Array.isArray(rawQuery.order) ? rawQuery.order[0] : rawQuery.order) || 'desc',
+    page: (Array.isArray(rawQuery.page) ? rawQuery.page[0] : rawQuery.page) || '1',
+    limit: (Array.isArray(rawQuery.limit) ? rawQuery.limit[0] : rawQuery.limit) || '20',
+  };
 
   const conditions: string[] = ['t.project_id = $1'];
   const params: (string | number)[] = [projectId];

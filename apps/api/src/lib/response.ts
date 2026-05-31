@@ -3,7 +3,7 @@ import { Response } from 'express';
 export const sendSuccess = <T>(res: Response, data: T, message?: string, status = 200) =>
   res.status(status).json({ success: true, data, ...(message ? { message } : {}) });
 
-export const sendError = (res: Response, error: string, status = 400, details?: Record<string, string[]>) =>
+export const sendError = (res: Response, error: string, status = 400, details?: Record<string, string[] | undefined>) =>
   res.status(status).json({ success: false, error, ...(details ? { details } : {}) });
 
 export const sendPaginated = <T>(
