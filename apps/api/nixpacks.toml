@@ -1,0 +1,15 @@
+[phases.setup]
+nixPkgs = ["nodejs_20", "pnpm"]
+
+[phases.install]
+cmds = ["pnpm install --filter=api... --frozen-lockfile"]
+
+[phases.build]
+cmds = [
+  "pnpm --filter=@taskflow/types build || true",
+  "pnpm --filter=@taskflow/validators build || true",
+  "pnpm --filter=api build"
+]
+
+[start]
+cmd = "node dist/index.js"

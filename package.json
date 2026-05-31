@@ -1,0 +1,22 @@
+{
+  "name": "taskflow",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "db:migrate": "pnpm --filter=api db:migrate",
+    "db:seed": "pnpm --filter=api db:seed"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.14.4"
+}
