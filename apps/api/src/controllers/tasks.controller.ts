@@ -34,7 +34,7 @@ export const listTasks = async (req: Request, res: Response): Promise<void> => {
   const limit: any = req.query.limit ? String(Array.isArray(req.query.limit) ? req.query.limit[0] : req.query.limit) : '20';
 
   const conditions: string[] = ['t.project_id = $1'];
-  const params: (string | number)[] = [projectId];
+  const params: any[] = [projectId];
 
   if (status) { params.push(status); conditions.push(`t.status = $${params.length}`); }
   if (priority) { params.push(priority); conditions.push(`t.priority = $${params.length}`); }
