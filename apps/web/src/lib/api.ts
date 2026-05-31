@@ -1,8 +1,18 @@
 /// <reference types="vite/client" />
 import axios, { AxiosInstance, AxiosError } from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_URL
-  ? `${import.meta.env.VITE_API_URL}/api`
+// Ensure import.meta.env is properly typed
+declare global {
+  interface ImportMetaEnv {
+    readonly VITE_API_URL?: string;
+  }
+  interface ImportMeta {
+    readonly env: ImportMetaEnv;
+  }
+}
+
+const API_BASE = (import.meta.env as any).VITE_API_URL
+  ? `${(import.meta.env as any).VITE_API_URL}/api`
   : '/api';
 
 const api: AxiosInstance = axios.create({
@@ -12,10 +22,16 @@ const api: AxiosInstance = axios.create({
 });
 
 let isRefreshing = false;
-let refreshQueue: Array<{ resolve: (value?: any) => void; reject: (err: any) => void }> = [];
+let refreshQueue: Array<{ resolve: (value?: any) => void; reject: (reason?: any) => void }> = [];
 
 const processQueue = (error: any = null) => {
-  refreshQueue.forEach((p) => (error ? p.reject(error) : p.resolve(undefined)));
+  refreshQueue.forEach((p) => {
+    if (error) {
+      p.reject(error);
+    } else {
+      p.resolve(undefined);
+    }
+  });
   refreshQueue = [];
 };
 
@@ -31,7 +47,7 @@ api.interceptors.response.use(
       !original.url?.includes('/auth/login')
     ) {
       if (isRefreshing) {
-        return new Promise((resolve, reject) => {
+        return new Promise<any>((resolve: (value?: any) => void, reject: (reason?: any) => void) => {
           refreshQueue.push({ resolve, reject });
         }).then(() => api(original));
       }
