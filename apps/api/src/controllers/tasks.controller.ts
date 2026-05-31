@@ -23,32 +23,25 @@ const TASK_JOINS = `
 export const listTasks = async (req: Request, res: Response): Promise<void> => {
   const { projectId } = req.params;
   
-  // Extract query params as strings, handling arrays
-  const getString = (val: any, def = ''): string => {
-    if (Array.isArray(val)) return String(val[0] || def);
-    if (typeof val === 'string') return val;
-    return String(def);
-  };
-
-  const status: string = getString(req.query.status);
-  const priority: string = getString(req.query.priority);
-  const assigned_to: string = getString(req.query.assigned_to);
-  const overdue: string = getString(req.query.overdue);
-  const search: string = getString(req.query.search);
-  const sort: string = getString(req.query.sort, 'created_at');
-  const order: string = getString(req.query.order, 'desc');
-  const page: string = getString(req.query.page, '1');
-  const limit: string = getString(req.query.limit, '20');
+  const status: any = req.query.status ? String(Array.isArray(req.query.status) ? req.query.status[0] : req.query.status) : '';
+  const priority: any = req.query.priority ? String(Array.isArray(req.query.priority) ? req.query.priority[0] : req.query.priority) : '';
+  const assigned_to: any = req.query.assigned_to ? String(Array.isArray(req.query.assigned_to) ? req.query.assigned_to[0] : req.query.assigned_to) : '';
+  const overdue: any = req.query.overdue ? String(Array.isArray(req.query.overdue) ? req.query.overdue[0] : req.query.overdue) : '';
+  const search: any = req.query.search ? String(Array.isArray(req.query.search) ? req.query.search[0] : req.query.search) : '';
+  const sort: any = req.query.sort ? String(Array.isArray(req.query.sort) ? req.query.sort[0] : req.query.sort) : 'created_at';
+  const order: any = req.query.order ? String(Array.isArray(req.query.order) ? req.query.order[0] : req.query.order) : 'desc';
+  const page: any = req.query.page ? String(Array.isArray(req.query.page) ? req.query.page[0] : req.query.page) : '1';
+  const limit: any = req.query.limit ? String(Array.isArray(req.query.limit) ? req.query.limit[0] : req.query.limit) : '20';
 
   const conditions: string[] = ['t.project_id = $1'];
   const params: (string | number)[] = [projectId];
 
-  if (status) { params.push(status as string); conditions.push(`t.status = $${params.length}`); }
-  if (priority) { params.push(priority as string); conditions.push(`t.priority = $${params.length}`); }
-  if (assigned_to) { params.push(assigned_to as string); conditions.push(`t.assigned_to = $${params.length}`); }
+  if (status) { params.push(status); conditions.push(`t.status = $${params.length}`); }
+  if (priority) { params.push(priority); conditions.push(`t.priority = $${params.length}`); }
+  if (assigned_to) { params.push(assigned_to); conditions.push(`t.assigned_to = $${params.length}`); }
   if (overdue === 'true') { conditions.push(`t.due_date < NOW() AND t.status != 'done'`); }
   if (search) {
-    params.push(`%${search as string}%`);
+    params.push(`%${search}%`);
     conditions.push(`t.title ILIKE $${params.length}`);
   }
 
