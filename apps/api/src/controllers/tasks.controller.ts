@@ -22,23 +22,23 @@ const TASK_JOINS = `
 
 export const listTasks = async (req: Request, res: Response): Promise<void> => {
   const { projectId } = req.params;
-  const rawQuery = req.query as Record<string, string | string[] | undefined>;
+  const q = req.query;
   
-  const getQueryParam = (key: keyof typeof rawQuery, defaultValue = ''): string => {
-    const val = rawQuery[key];
-    if (Array.isArray(val)) return val[0];
-    return String(val || defaultValue);
+  // Safely extract query params as strings, handling arrays
+  const getString = (val: any, def = ''): string => {
+    if (Array.isArray(val)) return String(val[0] || def);
+    return String(val || def);
   };
 
-  const status = getQueryParam('status');
-  const priority = getQueryParam('priority');
-  const assigned_to = getQueryParam('assigned_to');
-  const overdue = getQueryParam('overdue');
-  const search = getQueryParam('search');
-  const sort = getQueryParam('sort', 'created_at');
-  const order = getQueryParam('order', 'desc');
-  const page = getQueryParam('page', '1');
-  const limit = getQueryParam('limit', '20');
+  const status = getString(q.status);
+  const priority = getString(q.priority);
+  const assigned_to = getString(q.assigned_to);
+  const overdue = getString(q.overdue);
+  const search = getString(q.search);
+  const sort = getString(q.sort, 'created_at');
+  const order = getString(q.order, 'desc');
+  const page = getString(q.page, '1');
+  const limit = getString(q.limit, '20');
 
   const conditions: string[] = ['t.project_id = $1'];
   const params: (string | number)[] = [projectId];
