@@ -11,10 +11,10 @@ const api: AxiosInstance = axios.create({
 });
 
 let isRefreshing = false;
-let refreshQueue: Array<{ resolve: () => void; reject: (err: any) => void }> = [];
+let refreshQueue: Array<{ resolve: (value?: any) => void; reject: (err: any) => void }> = [];
 
 const processQueue = (error: any = null) => {
-  refreshQueue.forEach((p) => (error ? p.reject(error) : p.resolve()));
+  refreshQueue.forEach((p) => (error ? p.reject(error) : p.resolve(undefined)));
   refreshQueue = [];
 };
 
