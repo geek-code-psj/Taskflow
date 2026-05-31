@@ -1,19 +1,20 @@
-/// <reference types="vite/client" />
 import axios, { AxiosInstance, AxiosError } from 'axios';
 
-// Ensure import.meta.env is properly typed
-declare global {
-  interface ImportMetaEnv {
-    readonly VITE_API_URL?: string;
+// Helper to safely get environment variables without type issues
+function getApiUrl(): string {
+  try {
+    // @ts-ignore - Bypass type checking for import.meta.env
+    const envUrl = import.meta.env?.VITE_API_URL;
+    if (envUrl) {
+      return `${envUrl}/api`;
+    }
+  } catch {
+    // Silently fail if import.meta not available
   }
-  interface ImportMeta {
-    readonly env: ImportMetaEnv;
-  }
+  return '/api';
 }
 
-const API_BASE = (import.meta.env as any).VITE_API_URL
-  ? `${(import.meta.env as any).VITE_API_URL}/api`
-  : '/api';
+const API_BASE = getApiUrl();
 
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE,
@@ -22,10 +23,14 @@ const api: AxiosInstance = axios.create({
 });
 
 let isRefreshing = false;
-let refreshQueue: Array<{ resolve: (value?: any) => void; reject: (reason?: any) => void }> = [];
+type QueueItem = {
+  resolve: (value?: any) => void;
+  reject: (reason?: any) => void;
+};
+let refreshQueue: QueueItem[] = [];
 
 const processQueue = (error: any = null) => {
-  refreshQueue.forEach((p) => {
+  refreshQueue.forEach((p: QueueItem) => {
     if (error) {
       p.reject(error);
     } else {
