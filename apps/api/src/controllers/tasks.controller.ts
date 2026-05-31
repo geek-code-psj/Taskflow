@@ -22,28 +22,23 @@ const TASK_JOINS = `
 
 export const listTasks = async (req: Request, res: Response): Promise<void> => {
   const { projectId } = req.params;
-  const rawQuery = req.query;
-  const {
-    status = '',
-    priority = '',
-    assigned_to = '',
-    overdue = '',
-    search = '',
-    sort = 'created_at',
-    order = 'desc',
-    page = '1',
-    limit = '20',
-  } = {
-    status: (Array.isArray(rawQuery.status) ? rawQuery.status[0] : rawQuery.status) || '',
-    priority: (Array.isArray(rawQuery.priority) ? rawQuery.priority[0] : rawQuery.priority) || '',
-    assigned_to: (Array.isArray(rawQuery.assigned_to) ? rawQuery.assigned_to[0] : rawQuery.assigned_to) || '',
-    overdue: (Array.isArray(rawQuery.overdue) ? rawQuery.overdue[0] : rawQuery.overdue) || '',
-    search: (Array.isArray(rawQuery.search) ? rawQuery.search[0] : rawQuery.search) || '',
-    sort: (Array.isArray(rawQuery.sort) ? rawQuery.sort[0] : rawQuery.sort) || 'created_at',
-    order: (Array.isArray(rawQuery.order) ? rawQuery.order[0] : rawQuery.order) || 'desc',
-    page: (Array.isArray(rawQuery.page) ? rawQuery.page[0] : rawQuery.page) || '1',
-    limit: (Array.isArray(rawQuery.limit) ? rawQuery.limit[0] : rawQuery.limit) || '20',
+  const rawQuery = req.query as Record<string, string | string[] | undefined>;
+  
+  const getQueryParam = (key: keyof typeof rawQuery, defaultValue = ''): string => {
+    const val = rawQuery[key];
+    if (Array.isArray(val)) return val[0];
+    return String(val || defaultValue);
   };
+
+  const status = getQueryParam('status');
+  const priority = getQueryParam('priority');
+  const assigned_to = getQueryParam('assigned_to');
+  const overdue = getQueryParam('overdue');
+  const search = getQueryParam('search');
+  const sort = getQueryParam('sort', 'created_at');
+  const order = getQueryParam('order', 'desc');
+  const page = getQueryParam('page', '1');
+  const limit = getQueryParam('limit', '20');
 
   const conditions: string[] = ['t.project_id = $1'];
   const params: (string | number)[] = [projectId];
