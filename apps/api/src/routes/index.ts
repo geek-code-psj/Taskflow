@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, type Router as RouterType } from 'express';
 import { validate } from '../middlewares/validate';
 import { authenticate } from '../middlewares/auth';
 import { requireProjectMember } from '../middlewares/projectAuth';
@@ -12,7 +12,7 @@ import {
   CreateTaskSchema, UpdateTaskSchema, TaskFilterSchema,
 } from '@taskflow/validators';
 
-const router = Router();
+const router: RouterType = Router();
 
 // ── Auth ──────────────────────────────────────────────────────
 router.post('/auth/signup', validate(SignupSchema), auth.signup);

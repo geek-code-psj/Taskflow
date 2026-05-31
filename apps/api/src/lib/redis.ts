@@ -10,7 +10,7 @@ import { createClient } from 'redis';
 
 let redisClient: ReturnType<typeof createClient> | null = null;
 
-export const getRedisClient = async () => {
+export const getRedisClient = async (): Promise<ReturnType<typeof createClient> | null> => {
   if (!redisClient) {
     if (!process.env.REDIS_URL) {
       console.warn('[redis] REDIS_URL not set — rate limiting will use in-memory store (single-instance only)');
