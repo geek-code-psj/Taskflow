@@ -22,33 +22,33 @@ const TASK_JOINS = `
 
 export const listTasks = async (req: Request, res: Response): Promise<void> => {
   const { projectId } = req.params;
-  const q = req.query;
   
-  // Safely extract query params as strings, handling arrays
+  // Extract query params as strings, handling arrays
   const getString = (val: any, def = ''): string => {
     if (Array.isArray(val)) return String(val[0] || def);
-    return String(val || def);
+    if (typeof val === 'string') return val;
+    return String(def);
   };
 
-  const status = getString(q.status) as string;
-  const priority = getString(q.priority) as string;
-  const assigned_to = getString(q.assigned_to) as string;
-  const overdue = getString(q.overdue) as string;
-  const search = getString(q.search) as string;
-  const sort = getString(q.sort, 'created_at') as string;
-  const order = getString(q.order, 'desc') as string;
-  const page = getString(q.page, '1') as string;
-  const limit = getString(q.limit, '20') as string;
+  const status: string = getString(req.query.status);
+  const priority: string = getString(req.query.priority);
+  const assigned_to: string = getString(req.query.assigned_to);
+  const overdue: string = getString(req.query.overdue);
+  const search: string = getString(req.query.search);
+  const sort: string = getString(req.query.sort, 'created_at');
+  const order: string = getString(req.query.order, 'desc');
+  const page: string = getString(req.query.page, '1');
+  const limit: string = getString(req.query.limit, '20');
 
   const conditions: string[] = ['t.project_id = $1'];
   const params: (string | number)[] = [projectId];
 
-  if (status) { params.push(status); conditions.push(`t.status = $${params.length}`); }
-  if (priority) { params.push(priority); conditions.push(`t.priority = $${params.length}`); }
-  if (assigned_to) { params.push(assigned_to); conditions.push(`t.assigned_to = $${params.length}`); }
+  if (status) { params.push(status as string); conditions.push(`t.status = $${params.length}`); }
+  if (priority) { params.push(priority as string); conditions.push(`t.priority = $${params.length}`); }
+  if (assigned_to) { params.push(assigned_to as string); conditions.push(`t.assigned_to = $${params.length}`); }
   if (overdue === 'true') { conditions.push(`t.due_date < NOW() AND t.status != 'done'`); }
   if (search) {
-    params.push(`%${search}%`);
+    params.push(`%${search as string}%`);
     conditions.push(`t.title ILIKE $${params.length}`);
   }
 
